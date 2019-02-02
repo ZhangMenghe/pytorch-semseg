@@ -30,7 +30,7 @@ def test(args):
     img = misc.imread(args.img_path)
 
     data_loader = get_loader(args.dataset)
-    loader = data_loader(root=None, is_transform=True, img_norm=args.img_norm, test_mode=True)
+    loader = data_loader(root=args.root, is_transform=True, img_norm=args.img_norm, test_mode=True)
     n_classes = loader.n_classes
 
     resized_img = misc.imresize(img, (loader.img_size[0], loader.img_size[1]), interp="bicubic")
@@ -62,6 +62,7 @@ def test(args):
     model.to(device)
 
     images = img.to(device)
+    print(images.shape)
     outputs = model(images)
 
     if args.dcrf:
@@ -104,14 +105,14 @@ if __name__ == "__main__":
         "--model_path",
         nargs="?",
         type=str,
-        default="fcn8s_pascal_1_26.pkl",
+        default="models/pspnet_nyuv2_best_model.pkl",
         help="Path to the saved model",
     )
     parser.add_argument(
         "--dataset",
         nargs="?",
         type=str,
-        default="pascal",
+        default="nyuv2",
         help="Dataset to use ['pascal, camvid, ade20k etc']",
     )
 
@@ -146,6 +147,8 @@ if __name__ == "__main__":
                               False by default",
     )
     parser.set_defaults(dcrf=False)
+
+    parser.add_argument("--root", default="E:/NYUD2-dataset/", help = "Path of Root")
 
     parser.add_argument(
         "--img_path", nargs="?", type=str, default=None, help="Path of the input image"

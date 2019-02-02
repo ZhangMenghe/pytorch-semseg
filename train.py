@@ -20,7 +20,7 @@ from ptsemseg.schedulers import get_scheduler
 from ptsemseg.optimizers import get_optimizer
 
 from tensorboardX import SummaryWriter
-
+from torch.autograd import Variable
 
 def train(cfg, writer, logger):
 
@@ -57,10 +57,11 @@ def train(cfg, writer, logger):
     )
 
     n_classes = t_loader.n_classes
+    print("=====classes" + str(n_classes))
     trainloader = data.DataLoader(
         t_loader,
         batch_size=cfg["training"]["batch_size"],
-        num_workers=cfg["training"]["n_workers"],
+        # num_workers=cfg["training"]["n_workers"],
         shuffle=True,
     )
 
@@ -116,6 +117,7 @@ def train(cfg, writer, logger):
 
     while i <= cfg["training"]["train_iters"] and flag:
         for (images, labels) in trainloader:
+
             i += 1
             start_ts = time.time()
             scheduler.step()
@@ -123,10 +125,15 @@ def train(cfg, writer, logger):
             images = images.to(device)
             labels = labels.to(device)
 
-            optimizer.zero_grad()
-            outputs = model(images)
+            # images = Variable(images.cuda())
+            # labels = Variable(labels.cuda())
 
-            loss = loss_fn(input=outputs, target=labels)
+            optimizer.zero_grad()
+            # print(images.shape)
+            # print(labels.shape)
+            outputs = model(images)
+            # print(outputs[0])
+            loss = loss_fn(input=outputs[0], target=labels)
 
             loss.backward()
             optimizer.step()
@@ -194,7 +201,14 @@ def train(cfg, writer, logger):
                         writer.file_writer.get_logdir(),
                         "{}_{}_best_model.pkl".format(cfg["model"]["arch"], cfg["data"]["dataset"]),
                     )
-                    torch.save(state, save_path)
+                    # torch.save(state, save_path)
+                    #######
+                    save_path2 = os.path.join(
+                        writer.file_writer.get_logdir(),
+                        "{}_{}_cpu.pkl".format(cfg["model"]["arch"], cfg["data"]["dataset"]),
+                    )
+                    net_for_saving = model#model.module if use_nn_DataParallel else model
+                    torch.save(net_for_saving.state_dict(), save_path2)
 
             if (i + 1) == cfg["training"]["train_iters"]:
                 flag = False

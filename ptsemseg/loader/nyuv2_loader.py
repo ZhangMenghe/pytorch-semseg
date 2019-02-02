@@ -57,16 +57,16 @@ class NYUv2Loader(data.Dataset):
     def __getitem__(self, index):
         img_path = self.files[self.split][index].rstrip()
         img_number = img_path.split("_")[-1][:4]
-        lbl_path = os.path.join(
-            self.root, self.split + "_annot", "new_nyu_class13_" + img_number + ".png"
-        )
-
+        # lbl_path = os.path.join(
+        #     self.root, self.split + "_annot", "new_nyu_class13_" + img_number + ".png"
+        # )
+        lbl_path = self.root +self.split+"-class13-label/"
+        lbl_path = os.path.join(lbl_path, "new_nyu_class13_"+img_number+".png")
         img = m.imread(img_path)
         img = np.array(img, dtype=np.uint8)
 
         lbl = m.imread(lbl_path)
         lbl = np.array(lbl, dtype=np.uint8)
-
         if not (len(img.shape) == 3 and len(lbl.shape) == 2):
             return self.__getitem__(np.random.randint(0, self.__len__()))
 
@@ -79,6 +79,7 @@ class NYUv2Loader(data.Dataset):
         return img, lbl
 
     def transform(self, img, lbl):
+        # print(self.img_size)
         img = m.imresize(img, (self.img_size[0], self.img_size[1]))  # uint8 with RGB mode
         img = img[:, :, ::-1]  # RGB -> BGR
         img = img.astype(np.float64)
@@ -145,7 +146,7 @@ if __name__ == "__main__":
 
     augmentations = Compose([Scale(512), RandomRotate(10), RandomHorizontallyFlip()])
 
-    local_path = "/home/meet/datasets/NYUv2/"
+    local_path = "E:/NYUD2-dataset/nyu_train_rgb/"
     dst = NYUv2Loader(local_path, is_transform=True, augmentations=augmentations)
     bs = 4
     trainloader = data.DataLoader(dst, batch_size=bs, num_workers=0)

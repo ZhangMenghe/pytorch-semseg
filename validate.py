@@ -68,12 +68,12 @@ def validate(cfg, args):
 
         if args.measure_time:
             elapsed_time = timeit.default_timer() - start_time
-            print(
-                "Inference time \
-                  (iter {0:5d}): {1:3.5f} fps".format(
-                    i + 1, pred.shape[0] / elapsed_time
-                )
-            )
+            # print(
+            #     "Inference time \
+            #       (iter {0:5d}): {1:3.5f} fps".format(
+            #         i + 1, pred.shape[0] / elapsed_time
+            #     )
+            # )
         running_metrics.update(gt, pred)
 
     score, class_iou = running_metrics.get_scores()
@@ -91,14 +91,14 @@ if __name__ == "__main__":
         "--config",
         nargs="?",
         type=str,
-        default="configs/fcn8s_pascal.yml",
+        default="configs/pspnet_nyud2.yml",
         help="Config file to be used",
     )
     parser.add_argument(
         "--model_path",
         nargs="?",
         type=str,
-        default="fcn8s_pascal_1_26.pkl",
+        default="models/pspnet_nyuv2_best_model.pkl",
         help="Path to the saved model",
     )
     parser.add_argument(

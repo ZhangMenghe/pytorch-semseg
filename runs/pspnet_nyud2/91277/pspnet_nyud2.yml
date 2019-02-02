@@ -1,0 +1,25 @@
+model:
+    arch: pspnet
+data:
+    dataset: nyuv2
+    train_split: training
+    val_split: val
+    img_rows: 240
+    img_cols: 640
+    path: 'E:/NYUD2-dataset/'
+training:
+    train_iters: 100
+    batch_size: 4
+    val_interval: 1000
+    n_workers: 16
+    print_interval: 10
+    optimizer:
+        name: 'sgd'
+        lr: 1.0e-10
+        weight_decay: 0.0005
+        momentum: 0.99
+    loss:
+        name: 'cross_entropy'
+        size_average: False
+    lr_schedule:
+    resume: None

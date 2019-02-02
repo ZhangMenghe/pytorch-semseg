@@ -551,7 +551,6 @@ class pyramidPooling(nn.Module):
         else:  # eval mode and icnet: pre-trained for 1025 x 2049
             k_sizes = [(8, 15), (13, 25), (17, 33), (33, 65)]
             strides = [(5, 10), (10, 20), (16, 32), (33, 65)]
-
         if self.fusion_mode == "cat":  # pspnet: concat (including x)
             output_slices = [x]
 
